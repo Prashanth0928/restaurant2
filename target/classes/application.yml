@@ -1,0 +1,73 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Restaurant Order Management Service — Application Configuration
+# ─────────────────────────────────────────────────────────────────────────────
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: restaurant-order-service
+
+  # ── H2 Database Configuration ───────────────────────────────────────────────
+  datasource:
+    url: jdbc:h2:file:./data/restaurantdb   # saves data to a FILE — survives restart!
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+
+  h2:
+    console:
+      enabled: true                          # visual browser console to see your data
+      path: /h2-console                      # open: http://localhost:8080/h2-console
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update                       # auto-creates the orders table on startup
+    show-sql: true                           # prints SQL queries in terminal (good for learning)
+
+  # Jackson: controls how Java objects are serialised to/from JSON
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false   # Return dates as "2024-05-22T10:30:00" not a number
+    deserialization:
+      fail-on-unknown-properties: false  # Ignore unknown JSON fields instead of throwing
+    mapper:
+      accept-case-insensitive-enums: true  # Accept "confirmed", "Confirmed", "CONFIRMED" — all work
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Swagger / SpringDoc configuration
+# Swagger UI:    http://localhost:8080/swagger-ui.html
+# OpenAPI JSON:  http://localhost:8080/api-docs
+# ─────────────────────────────────────────────────────────────────────────────
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    try-it-out-enabled: true      # Enables the "Try it out" button in Swagger UI
+    operations-sorter: method     # Sort endpoints by HTTP method (GET, POST, PUT, DELETE)
+    tags-sorter: alpha            # Sort tag groups alphabetically
+    display-request-duration: true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# WebClient configuration — used when calling external REST APIs
+# ─────────────────────────────────────────────────────────────────────────────
+webclient:
+  base-url: http://localhost:8080
+  timeout:
+    connect: 5000   # Connection timeout in milliseconds
+    read: 5000      # Read timeout in milliseconds
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Logging configuration
+# ─────────────────────────────────────────────────────────────────────────────
+logging:
+  level:
+    com.restaurant.orderservice: DEBUG      # Show all DEBUG logs from our code
+    org.springframework.web: INFO           # Spring MVC request/response info
+    reactor.netty: WARN                     # Suppress noisy Netty logs
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
